@@ -59,14 +59,8 @@ dotnet publish ".\src\AI_Image_Metadata_Viewer_v1.2.1\AI_Image_Metadata_Viewer_v
   -o ".\artifacts\publish\win-x64"
 ```
 
-## テスト
-
-```powershell
-dotnet run --project ".\tests\AI_Image_Metadata_Viewer.Tests\AI_Image_Metadata_Viewer.Tests.csproj" -c Release
-```
-
-Explorerからの実ドラッグ＆ドロップ試験用スクリプトも `tests/ExplorerDragSmoke.ps1` に含まれています。
-
 ## 公開リポジトリについて
 
-Git管理にはソースコード、テスト、アイコン成果物のみを含め、`bin`、`obj`、`artifacts`、実行時の `settings.json`、公開用EXE等は `.gitignore` で除外しています。バイナリ配布を行う場合はGitHub Releases等へ別途配置する運用を推奨します。
+公開範囲はアプリ本体ソースとビルドに必要な設定・アイコンに限定しています。リリース検証用の内部テスト資材、`bin`、`obj`、`artifacts`、実行時の `settings.json`、EXE、ログ、アーカイブ等は公開対象外です。
+
+公開用アイコンは、ビルドに不要な付加PNGチャンクを除外したクリーンなICOを使用しています。バイナリ配布を行う場合はGitHub Releases等へ別途配置する運用を推奨します。
