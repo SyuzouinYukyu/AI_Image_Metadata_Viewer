@@ -1,0 +1,35 @@
+# Build output
+**/bin/
+**/obj/
+artifacts/
+TestResults/
+
+# Visual Studio / IDE
+.vs/
+.vscode/
+.idea/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Runtime settings (created next to the EXE)
+settings.json
+
+# Logs / temporary files
+*.log
+*.tmp
+*.bak
+*.cache
+
+# OS metadata
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# Published binaries / archives
+*.exe
+*.dll
+*.pdb
+*.zip
+*.7z
