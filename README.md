@@ -520,4 +520,4 @@ Metadataは画像作成ソフトウェアや画像形式によって構造が大
 
 ライセンスが明示されていない限り、本リポジトリのソースコードについて、複製、改変、再配布、商用利用等の権利を明示的に許諾するものではありません。
 
-Copyright © AI Image Metadata Viewer
+Copyright © 2026 Syuzouin Yukyu. All rights reserved.
