@@ -6,7 +6,7 @@ AUTOMATIC1111、ComfyUI、NovelAIなどの生成情報を解析し、Prompt、�
 
 **本リポジトリは、ソフトウェアの透明性確保および安全性確認を目的として、ソースコードを公開しています。**
 
-Current version: **v1.2.1**
+Current version: **v1.2.3**
 
 ---
 
@@ -16,12 +16,14 @@ Current version: **v1.2.1**
 - PNG / JPEG / WebPを中心とした画像表示
 - AUTOMATIC1111 / ComfyUI / NovelAI メタデータ解析
 - Positive / Negative Prompt表示
+- Promptの画面幅に応じた自動折り返し表示
 - 生成設定の解析・表示
 - Model / Checkpoint / LoRA情報表示
 - ComfyUI Prompt / Workflow JSON表示
 - RAW Metadata表示
 - メタデータ検索
 - 各項目のクリップボードコピー
+- 「主要生成情報をコピー」による画像情報・Prompt・生成設定・Model / LoRAの一括コピー
 - コピー成功時に「コピー済」を約1秒表示
 - Prompt内のU+005C（`\`）を明確なバックスラッシュとして表示
 - 複数ファイル・フォルダーのドラッグ＆ドロップ
@@ -42,48 +44,26 @@ Current version: **v1.2.1**
 
 ## 対応する生成AIメタデータ
 
-主に以下の生成環境で作成された画像のメタデータ解析に対応しています。
-
 ### AUTOMATIC1111
 
 主に以下の情報を解析・表示します。
 
-- Positive Prompt
-- Negative Prompt
-- Steps
-- Sampler
-- Scheduler
-- CFG Scale
-- Seed
-- Subseed
-- Size
-- Model
-- Model Hash
-- VAE
-- Clip Skip
-- Hires関連情報
-- LoRA
+- Positive Prompt / Negative Prompt
+- Steps / Sampler / Scheduler / CFG Scale
+- Seed / Subseed / Size
+- Model / Model Hash / VAE
+- Clip Skip / Hires関連情報 / LoRA
 - その他保存されている生成パラメーター
 
 ### ComfyUI
 
 主に以下の情報を解析・表示します。
 
-- Prompt JSON
-- Workflow JSON
-- KSampler
-- Custom Nodeを含む各種ノード情報
-- Checkpoint
-- UNET
-- VAE
-- CLIP
-- LoRA
-- Seed
-- Steps
-- CFG
-- Sampler
-- Scheduler
-- Denoise
+- Prompt JSON / Workflow JSON
+- KSampler / Custom Nodeを含む各種ノード情報
+- Checkpoint / UNET / VAE / CLIP / LoRA
+- Seed / Steps / CFG / Sampler / Scheduler / Denoise
+- Node Count / KSampler Count / Workflow Node Count / Connection Count
 - その他Workflow内に保存されている情報
 
 ### NovelAI
@@ -94,21 +74,13 @@ Current version: **v1.2.1**
 
 ## Prompt表示
 
-日本語Windows環境では、Unicodeの
-
-`U+005C REVERSE SOLIDUS`
-
-が使用フォントによって円記号のように表示される場合があります。
-
-AI Image Metadata Viewer v1.2.1では、Prompt表示部分にConsolasを使用し、
+Prompt表示部分にはConsolasを使用し、日本語Windows環境で `U+005C REVERSE SOLIDUS` が円記号のように見える問題を避けています。
 
 ```text
 \(kancolle\)
 ```
 
-のようなバックスラッシュを画面上でも明確に `\` として表示します。
-
-これは**表示上のみの処理**です。
+v1.2.2以降ではPositive / Negative Promptを画面幅に応じて自動折り返し表示します。折り返しは**表示上のみ**で、元Metadata、内部文字列、Clipboard内容には改行を追加しません。
 
 以下の文字コードは相互変換しません。
 
@@ -118,63 +90,71 @@ U+00A5  ¥
 U+FFE5  ￥
 ```
 
-元のMetadata、内部Prompt文字列、Clipboardへコピーされる文字列についても変更しません。
-
 ---
 
 ## コピー機能
 
-各種メタデータやPromptなどをクリップボードへコピーできます。
+各種メタデータやPromptをクリップボードへコピーできます。
 
-コピーに成功すると、対象のコピー操作が一時的に以下のように変化します。
+コピー成功時は対象ボタン等が一時的に `コピー済` へ変化し、約1秒後に元の表示へ戻ります。
 
-```text
-コピー
-  ↓
-コピー済
-  ↓ 約1秒
-コピー
-```
+### 主要生成情報をコピー
 
-コピー成功時に確認ダイアログは表示されません。
+概要タブの「主要生成情報をコピー」では、現在画像について以下をまとめてコピーできます。
 
-連続コピーや複数のコピー操作についても、それぞれ独立して状態管理されます。
-
-主なコピー対象は以下です。
-
-- 各メタデータ項目
-- 概要
+- 画像情報
 - Positive Prompt
 - Negative Prompt
 - 生成設定
-- Prompt JSON
-- Workflow JSON
-- RAW Metadata
-- その他対応する表示項目
+- Model / LoRA
+
+出力例:
+
+```text
+=== 画像情報 ===
+ファイル名: example.png
+形式: Png
+MIME: image/png
+幅: 1024
+高さ: 1360
+生成元: ComfyUI
+
+=== ポジティブプロンプト ===
+...
+
+=== ネガティブプロンプト ===
+...
+
+=== 生成設定 ===
+Width: 1024
+Height: 1360
+Seed: 435003940542920
+Steps: 30
+CFG: 7.0
+Sampler: euler
+Scheduler: normal
+Denoise: 1.0
+Node Count: 9
+KSampler Count: 1
+Workflow Node Count: 9
+Connection Count: 10
+
+=== Model / LoRA ===
+Checkpoint: example.safetensors
+VAE: example.safetensors
+```
+
+生成設定は `項目名: 値` 形式で出力し、区分名は付加しません。v1.2.3ではComfyUI由来の `Positive Prompt` / `Negative Prompt` Fieldを生成設定セクションから除外し、独立したPromptセクションとの重複を防止しています。
+
+主要生成情報にはフルパス、作成日時、更新日時、SHA-256、RAW Metadata、Prompt JSON、Workflow JSON等を含めません。
 
 ---
 
 ## 画像キュー
 
-単一ファイル、複数ファイル、フォルダーなどを読み込めます。
+新しい「開く」操作またはドラッグ＆ドロップ操作を行うと、以前のキューへ追加せず、**新しい入力内容でキューを置き換えます。**
 
-新しい「開く」操作またはドラッグ＆ドロップ操作を行うと、以前のキューへ追加するのではなく、**新しい入力内容でキューを置き換えます。**
-
-例:
-
-```text
-A.pngを開く
-↓
-Queue = A.png
-
-その後、100枚の画像を含むBフォルダーを開く
-↓
-A.pngはキューから削除
-↓
-Queue = Bフォルダー内の100枚
-```
-
-古いキューに対する非同期解析結果が、新しいキューへ遅れて反映されないよう制御しています。
+古いキューに対する非同期解析結果が新しいキューへ遅れて反映されないよう制御しています。
 
 ---
 
@@ -182,25 +162,16 @@ Queue = Bフォルダー内の100枚
 
 PNG / JPEG / WebPでは、画像本体を再エンコードせずに対応メタデータを削除できます。
 
-用途に応じた複数の削除モードを備えています。
-
-削除処理では可能な限り以下の情報を保護します。
+削除処理では可能な限り以下を保護します。
 
 - Orientation
 - ICC / Color Profile
-- IFD1
-- Thumbnail
-- SubIFD
+- IFD1 / Thumbnail / SubIFD
 - MakerNote
-- private tag
-- unknown tag
+- private / unknown tag
 - その他削除対象外の表示・画像関連情報
 
-削除対象の文字列については、単にEXIFの参照エントリから見えなくするだけではなく、削除対象データがファイル内部に復元可能な状態で残らないよう、対応可能な領域について物理的な消去処理を行います。
-
-ただし、削除対象領域と保持対象領域が共有されており、安全な物理消去が保証できないEXIF構造については、画像、MakerNote、Thumbnail等の破損を防ぐため処理を拒否します。
-
-安全性を確認できない状態で強制的に削除することはありません。
+削除対象データについて、対応可能な領域は物理的に消去します。削除対象領域と保持対象領域を安全に分離できないEXIF構造では、画像やMakerNote等の破損を避けるため処理を拒否します。
 
 ---
 
@@ -208,173 +179,37 @@ PNG / JPEG / WebPでは、画像本体を再エンコードせずに対応メタ
 
 既定では元画像を直接変更せず、メタデータ削除後の画像を別ファイルとして保存します。
 
-原本へ反映する場合は、一時ファイルを作成・検証してから置換します。
-
-処理中に別アプリケーション等によって元ファイルが変更されていないか、以下の情報を使用して確認します。
-
-- File Length
-- LastWriteTime
-- SHA-256
-
-さらに、最終的な原本置換直前にも再検証します。
-
-元ファイルの変更を検出した場合は置換を中止し、古い解析結果を基に作成された一時ファイルで原本を上書きしません。
+原本へ反映する場合は一時ファイルを作成・検証してから置換し、File Length / LastWriteTime / SHA-256を使用して処理中の原本変更を検出します。最終置換直前にも再検証し、変更を検出した場合は上書きを中止します。
 
 ---
 
 ## 対応画像形式
 
-### 主な表示形式
-
-主に以下の形式を対象としています。
+主な表示対象:
 
 - PNG
 - JPEG
 - WebP
 
-その他の形式についても、Windows環境や利用可能なデコーダーによって表示可能な場合があります。
+HEIF / AVIF / JPEG XL等はWindows側のCodec / Decoderによって表示可能な場合があります。
 
-### 無劣化メタデータ削除
-
-正式対応形式は以下です。
+無劣化メタデータ削除の正式対応形式:
 
 - PNG
 - JPEG
 - WebP
-
-これらの形式では、画像本体を再エンコード・再圧縮せずに対応メタデータを削除します。
-
----
-
-## HEIF / AVIF / JPEG XL
-
-HEIF、AVIF、JPEG XL等の表示可否は、Windows側で利用可能なCodec / Decoderに依存します。
-
-対応コーデックが導入されていない環境では表示できない場合があります。
-
-また、これらの形式はPNG / JPEG / WebPと同等の無劣化メタデータ削除の正式対応対象ではありません。
-
----
-
-## 画像表示
-
-以下の基本操作に対応しています。
-
-- Fit表示
-- 100%表示
-- Zoom
-- Pan
-- 前の画像
-- 次の画像
-- ウィンドウサイズ変更
-- 最大化 / 復元
-- ドラッグ＆ドロップ
-
-画面は画像表示用の左ペインと、メタデータ表示用の右ペインで構成され、両者の境界はドラッグして調整できます。
-
----
-
-## メタデータ表示
-
-主な表示タブから生成情報や画像Metadataを確認できます。
-
-長い文字列については、画面幅に応じた表示と完全値の確認を行えるよう設計しています。
-
-概要画面では主要な画像情報をまとめて確認できます。
-
-例:
-
-- ファイル名
-- フルパス
-- 画像形式
-- MIME
-- ファイルサイズ
-- 幅
-- 高さ
-- アスペクト比
-- Pixel Format
-- Color Space
-- Alpha
-- DPI
-- Orientation
-- SHA-256
-- 生成元
-
----
-
-## RAW Metadata
-
-画像コンテナに保存されているMetadataを可能な範囲で解析・表示します。
-
-対象となる情報には、形式に応じて以下が含まれます。
-
-- PNG chunks
-- EXIF
-- XMP
-- ICC
-- GPS
-- JPEG Metadata
-- WebP RIFF chunks
-- 生成AI固有Metadata
-- その他検出可能なMetadata
-
----
-
-## SHA-256
-
-現在表示しているファイルのSHA-256を確認できます。
-
-ファイル識別や改変確認などに利用できます。
 
 ---
 
 ## 設定ファイル
 
-設定は
-
-```text
-settings.json
-```
-
-として、実行EXEと同じフォルダーへ保存されます。
-
-`%LOCALAPPDATA%` 等へ自動保存する仕様ではありません。
-
-設定ファイルへ書き込めない環境では、アプリケーション本体を異常終了させず、安全側で処理します。
+設定は `settings.json` として実行EXEと同じフォルダーへ保存されます。`%LOCALAPPDATA%` 等へ自動保存する仕様ではありません。
 
 ---
 
 ## プライバシー
 
-AI Image Metadata Viewer自体は、画像やメタデータを外部サーバーへ送信しません。
-
-通常使用時に外部通信を必要としません。
-
-以下の処理はローカル環境内で行われます。
-
-- 画像表示
-- Metadata解析
-- Prompt解析
-- Workflow解析
-- SHA-256計算
-- Metadata削除
-- Clipboardコピー
-
----
-
-## 管理者権限
-
-通常の使用に管理者権限は必要ありません。
-
-UACによる管理者昇格を前提としたアプリケーションではありません。
-
----
-
-## ログ
-
-通常使用時に常時ログファイルを生成する仕様ではありません。
-
-予期しないエラーが発生した場合は、エラー内容を確認できるダイアログを表示します。
+画像表示、Metadata解析、Prompt / Workflow解析、SHA-256計算、Metadata削除、Clipboardコピーはローカル環境内で行われます。AI Image Metadata Viewer自体は画像やメタデータを外部サーバーへ送信せず、通常使用時に外部通信を必要としません。
 
 ---
 
@@ -384,17 +219,13 @@ UACによる管理者昇格を前提としたアプリケーションではあ�
 
 - Windows 11 x64
 
-正式リリース版はSelf-containedで発行されているため、通常は.NET Runtimeを別途インストールする必要はありません。
+正式リリース版はSelf-containedのため、通常は.NET Runtimeを別途インストールする必要はありません。管理者権限も不要です。
 
 ### 開発・ビルド環境
 
 - Windows 11 x64
 - .NET 10 SDK
 - NuGet接続環境
-
----
-
-## 使用ライブラリ
 
 主なNuGet依存関係:
 
@@ -405,18 +236,15 @@ UACによる管理者昇格を前提としたアプリケーションではあ�
 
 ## ビルド
 
-PowerShellでリポジトリルートから実行します。
-
 ```powershell
-dotnet restore ".\src\AI_Image_Metadata_Viewer_v1.2.1\AI_Image_Metadata_Viewer_v1.2.1.csproj"
-
-dotnet build ".\src\AI_Image_Metadata_Viewer_v1.2.1\AI_Image_Metadata_Viewer_v1.2.1.csproj" -c Release
+dotnet restore ".\src\AI_Image_Metadata_Viewer_v1.2.3\AI_Image_Metadata_Viewer_v1.2.3.csproj"
+dotnet build ".\src\AI_Image_Metadata_Viewer_v1.2.3\AI_Image_Metadata_Viewer_v1.2.3.csproj" -c Release
 ```
 
-自己完結・単一EXEとして発行する場合:
+自己完結・単一EXE:
 
 ```powershell
-dotnet publish ".\src\AI_Image_Metadata_Viewer_v1.2.1\AI_Image_Metadata_Viewer_v1.2.1.csproj" `
+dotnet publish ".\src\AI_Image_Metadata_Viewer_v1.2.3\AI_Image_Metadata_Viewer_v1.2.3.csproj" `
   -c Release `
   -r win-x64 `
   --self-contained true `
@@ -426,26 +254,30 @@ dotnet publish ".\src\AI_Image_Metadata_Viewer_v1.2.1\AI_Image_Metadata_Viewer_v
 
 ---
 
-## v1.2.1
+## v1.2.3
 
-v1.2.1では主に以下を改善しました。
+- 「主要生成情報をコピー」のComfyUI生成設定から `Positive Prompt` / `Negative Prompt` の重複Fieldを除外
+- Parserや画面表示は変更せず、コピー専用フィルターのみを局所修正
+- Seed / Steps / CFG / Sampler / Scheduler / DenoiseおよびNode / Workflow集計情報は維持
+- v1.2.2のPrompt自動折り返し、主要生成情報コピー、既存UI・解析・Metadata削除等を維持
 
-- Prompt内のU+005C（`\`）が日本語Windows環境で円記号のように表示される問題を改善
-- Prompt表示部分にConsolasを使用
-- 元MetadataやClipboard内容を変更しない表示方式を採用
-- コピー成功時に「コピー済」を約1秒表示
-- 各種コピー操作のフィードバックを統一
-- 連続コピー・複数コピー時の状態管理を改善
-- 既存の画像表示、Metadata解析、Metadata削除等の機能を維持
+### v1.2.2で追加された主な機能
+
+- 概要タブへ「主要生成情報をコピー」を追加
+- Positive / Negative Promptを自動折り返し・縦スクロール表示へ変更
+- 表示上の折り返しを元PromptやClipboardへ混入させない仕様を採用
+
+### v1.2.1で追加された主な機能
+
+- Prompt表示部分にConsolasを使用し、U+005Cを明確なバックスラッシュとして表示
+- コピー成功時の「コピー済」フィードバックを統一
 
 ---
 
-## Release
-
-正式版:
+## Formal EXE v1.2.3
 
 ```text
-AI_Image_Metadata_Viewer_v1.2.1.exe
+AI_Image_Metadata_Viewer_v1.2.3.exe
 ```
 
 File size:
@@ -457,7 +289,7 @@ File size:
 SHA-256:
 
 ```text
-F998B23D15063293E13737D3CDC9CE1BD5392A39EC65BA28208894C2A4F799F8
+A024FD463E3A4C0B3F31431EB57406C2E0391F6510CAD2E58321076145CABC7D
 ```
 
 正式な実行バイナリはGitHub Releasesから配布します。
@@ -468,20 +300,7 @@ F998B23D15063293E13737D3CDC9CE1BD5392A39EC65BA28208894C2A4F799F8
 
 **本リポジトリは、ソフトウェアの透明性確保および安全性確認を目的として、ソースコードを公開しています。**
 
-公開リポジトリには、アプリケーション本体のソースコードおよびビルドに必要な設定ファイル等を収録しています。
-
-利用者が以下のような点を確認できることを目的としています。
-
-- 外部通信の有無
-- 画像やMetadataの取扱い
-- Metadata解析処理
-- Metadata削除処理
-- ファイル操作
-- 原本保護処理
-- Clipboard処理
-- その他アプリケーション内部の主要な動作
-
-ローカル生成物や実行環境固有データについてはGit管理対象外です。
+公開リポジトリにはアプリケーション本体のソースコードおよびビルドに必要な設定ファイル等を収録します。ローカル生成物や実行環境固有データはGit管理対象外です。
 
 主な除外対象:
 
@@ -489,26 +308,17 @@ F998B23D15063293E13737D3CDC9CE1BD5392A39EC65BA28208894C2A4F799F8
 - `obj`
 - `artifacts`
 - `settings.json`
-- ビルド済みEXE
-- DLL
-- PDB
-- ログ
-- 一時ファイル
-- ZIP等の生成物
-
-正式な実行バイナリについてはGitHub Releasesから配布します。
+- ビルド済みEXE / DLL / PDB
+- ログ / 一時ファイル / ZIP等の生成物
+- テスト・検証用ローカル成果物
 
 ---
 
 ## 注意事項
 
-Metadataは画像作成ソフトウェアや画像形式によって構造が大きく異なります。
+Metadataは画像作成ソフトウェアや画像形式によって構造が大きく異なります。すべての画像について、存在するあらゆるMetadataを完全に解析・削除できることを保証するものではありません。
 
-すべての画像について、存在するあらゆるMetadataを完全に解析・削除できることを保証するものではありません。
-
-特に未知のEXIF構造や、削除対象と保持対象のデータ領域が共有されている場合は、安全性を優先して削除処理を拒否することがあります。
-
-重要な画像を処理する場合は、原本のバックアップを保持してください。
+未知のEXIF構造や、削除対象と保持対象のデータ領域が共有されている場合は、安全性を優先して削除処理を拒否することがあります。重要な画像を処理する場合は原本のバックアップを保持してください。
 
 ---
 

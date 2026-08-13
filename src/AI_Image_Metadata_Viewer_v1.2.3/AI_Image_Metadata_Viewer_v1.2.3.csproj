@@ -8,11 +8,11 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <ApplicationHighDpiMode>PerMonitorV2</ApplicationHighDpiMode>
-    <AssemblyName>AI_Image_Metadata_Viewer_v1.2.1</AssemblyName>
+    <AssemblyName>AI_Image_Metadata_Viewer_v1.2.3</AssemblyName>
     <RootNamespace>AIImageMetadataViewer</RootNamespace>
-    <Version>1.2.1</Version>
-    <FileVersion>1.2.1.0</FileVersion>
-    <AssemblyVersion>1.2.1.0</AssemblyVersion>
+    <Version>1.2.3</Version>
+    <FileVersion>1.2.3.0</FileVersion>
+    <AssemblyVersion>1.2.3.0</AssemblyVersion>
     <ApplicationIcon>Assets\app.ico</ApplicationIcon>
     <Authors>AI Image Metadata Viewer</Authors>
     <Product>AI Image Metadata Viewer</Product>
